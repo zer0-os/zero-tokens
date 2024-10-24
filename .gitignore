@@ -8,6 +8,7 @@ typechain-types
 .idea
 .vscode
 dist
+bin
 
 # Hardhat files
 cache
