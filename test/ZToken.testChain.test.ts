@@ -2,6 +2,7 @@ import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ZToken } from "../typechain";
+import { parseEther } from "ethers";
 
 describe("ZToken Campaign Tests", async () => {
   let zToken : ZToken;
@@ -29,7 +30,7 @@ describe("ZToken Campaign Tests", async () => {
 
   it("Should allow transferring tokens", async () => {
     const balanceBefore = await zToken.connect(ownerSigner).balanceOf(ownerSigner.address);
-    const transferAmount = 2n;
+    const transferAmount = parseEther("20");
 
     const tx = await zToken.connect(beneficiarySigner).transfer(ownerSigner.address, transferAmount);
     // wait 2 blocks just in case (can fail with 1)
