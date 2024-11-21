@@ -5,13 +5,14 @@ import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { ERC721Burnable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { IZeroVotingERC721 } from "./IZeroVotingERC721.sol";
 
 /**
  * @notice Custom ERC721 contract with AccessControl for role management and minting.
  * @dev The contract allows minting and burning of ERC721 tokens.
  *      Roles are managed using AccessControl.
  */
-contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
+contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable, IZeroVotingERC721 {
 
     // Declare role constants
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -21,7 +22,7 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
     uint256 private _tokenIdCounter;
 
     // Mapping to track locked tokens for voting
-    mapping(uint256 => bool) private _lockedTokens;
+    mapping(uint256 user => bool hasToken) private _lockedTokens;
 
     // Modifier to restrict access to only the Governance address
     modifier onlyGovernance() {
@@ -47,7 +48,7 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
      * @param to The address to receive the minted token.
      * @param tokenURI The URI associated with the minted token.
      */
-    function mint(address to, string memory tokenURI) external onlyRole(MINTER_ROLE) {
+    function mint(address to, string memory tokenURI) external override onlyRole(MINTER_ROLE) {
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
 
@@ -72,17 +73,18 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
      * @dev Can only be called by the contract owner.
      * @param admin The address of the new admin.
      */
-    function setAdmin(address admin) external onlyOwner {
+    function setAdmin(address admin) external override onlyOwner {
         require(admin != address(0), "Invalid admin address");
         _grantRole(ADMIN_ROLE, admin);
     }
 
     /**
      * @notice Burns a token.
-     * @dev This function allows an account to burn their own token or an authorized account to burn on behalf of the owner.
+     * @dev This function allows an account to burn their own token or 
+     * an authorized account to burn on behalf of the owner.
      * @param tokenId The ID of the token to burn.
      */
-    function burn(uint256 tokenId) public override(ERC721Burnable) {
+    function burn(uint256 tokenId) public override(ERC721Burnable, IZeroVotingERC721) {
         super.burn(tokenId);
     }
 
@@ -91,7 +93,7 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
      * @dev This returns the current value of the tokenId counter, which is incremented after each mint.
      * @return The current token count.
      */
-    function currentTokenCount() public view returns (uint256) {
+    function currentTokenCount() public view override returns (uint256) {
         return _tokenIdCounter;
     }
 
@@ -100,7 +102,7 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
      * @dev Only token owner can lock their tokens for voting.
      * @param tokenIds The list of token IDs to lock for voting.
      */
-    function lockTokensForVoting(uint256[] calldata tokenIds) external {
+    function lockTokensForVoting(uint256[] calldata tokenIds) external override {
         for (uint256 i = 0; i < tokenIds.length; i++) {
             uint256 tokenId = tokenIds[i];
             require(ownerOf(tokenId) == msg.sender, "Not the owner of the token");
@@ -115,7 +117,7 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
      * @dev Only the original owner can unlock their tokens.
      * @param tokenIds The list of token IDs to unlock.
      */
-    function unlockTokens(uint256[] calldata tokenIds) external {
+    function unlockTokens(uint256[] calldata tokenIds) external override {
         for (uint256 i = 0; i < tokenIds.length; i++) {
             uint256 tokenId = tokenIds[i];
             require(ownerOf(tokenId) == msg.sender, "Not the owner of the token");
@@ -130,7 +132,7 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
      * @param tokenId The ID of the token to check.
      * @return True if the token is locked, false otherwise.
      */
-    function isTokenLocked(uint256 tokenId) external view returns (bool) {
+    function isTokenLocked(uint256 tokenId) external view override returns (bool) {
         return _lockedTokens[tokenId];
     }
 
@@ -184,11 +186,14 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
 
     /**
      * @notice Implements supportsInterface from ERC165.
-     * @dev This function is required to avoid conflicts when inheriting from multiple contracts that implement `supportsInterface`.
+     * @dev This function is required to avoid conflicts 
+     * when inheriting from multiple contracts that implement `supportsInterface`.
      * @param interfaceId The interface identifier (EIP-165).
      * @return True if the contract implements the specified interface, otherwise false.
      */
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) 
+        public view override(ERC721, AccessControl, IZeroVotingERC721) returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 }

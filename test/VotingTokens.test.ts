@@ -1,13 +1,14 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import { ContractFactory } from "ethers";
+import { ZeroVotingERC20 } from "../typechain";
 
 describe.only("VotingToken", () => {
-  let VotingToken : any;
-  let votingToken : any;
+  let VotingToken : ContractFactory;
+  let votingToken : ZeroVotingERC20;
   let owner : HardhatEthersSigner;
   let addr1 : HardhatEthersSigner;
-  let addr2 : HardhatEthersSigner;
 
   const tokenName = "ZeroVotingERC20";
   const tokenSymbol = "ZV";
@@ -17,7 +18,6 @@ describe.only("VotingToken", () => {
     [
       owner,
       addr1,
-      addr2,
     ] = await ethers.getSigners();
 
     votingToken = await VotingToken.deploy(tokenName, tokenSymbol, owner);

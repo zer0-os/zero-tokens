@@ -22,7 +22,7 @@ contract ZeroVotingERC20 is ERC20Votes, ERC20Permit, IZeroVotingERC20, Ownable, 
     * @dev The mapping associates an account address with the amount of tokens locked for voting.
     *      These tokens are excluded from the account's available balance until unlocked.
     */
-    mapping(address => uint256) private lockedTokens;
+    mapping(address user => uint256 amount) private _lockedTokens;
 
     /**
     * Throw this error if someone submits a non-zero token burn address.
@@ -58,7 +58,7 @@ contract ZeroVotingERC20 is ERC20Votes, ERC20Permit, IZeroVotingERC20, Ownable, 
      * @param to The address receiving the minted tokens.
      * @param amount The amount of tokens to mint.
      */
-    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 amount) external override onlyRole(MINTER_ROLE) {
         _mint(to, amount);
     }
 
@@ -113,9 +113,9 @@ contract ZeroVotingERC20 is ERC20Votes, ERC20Permit, IZeroVotingERC20, Ownable, 
      * @param account The address of the account.
      * @param amount The amount of tokens to lock.
      */
-    function lockTokens(address account, uint256 amount) external onlyGovernance {
+    function lockTokens(address account, uint256 amount) external override onlyGovernance {
         require(balanceOf(account) >= amount, "Insufficient balance");
-        lockedTokens[account] += amount;
+        _lockedTokens[account] += amount;
     }
 
     /**
@@ -123,16 +123,16 @@ contract ZeroVotingERC20 is ERC20Votes, ERC20Permit, IZeroVotingERC20, Ownable, 
      * @param account The address of the account.
      * @param amount The amount of tokens to unlock.
      */
-    function unlockTokens(address account, uint256 amount) external onlyGovernance {
-        require(lockedTokens[account] >= amount, "Not enough locked tokens");
-        lockedTokens[account] -= amount;
+    function unlockTokens(address account, uint256 amount) external override onlyGovernance {
+        require(_lockedTokens[account] >= amount, "Not enough locked tokens");
+        _lockedTokens[account] -= amount;
     }
 
     /**
      * @notice Overrides the balanceOf function to account for locked tokens.
      */
     function balanceOf(address account) public view override (ERC20, IZeroVotingERC20) returns (uint256) {
-        return super.balanceOf(account) - lockedTokens[account];
+        return super.balanceOf(account) - _lockedTokens[account];
     }
 
     /**
@@ -141,7 +141,7 @@ contract ZeroVotingERC20 is ERC20Votes, ERC20Permit, IZeroVotingERC20, Ownable, 
     *      The governance address must not be the zero address.
     * @param _governance The address of the Governance contract to set.
     */
-    function setGovernance(address _governance) external onlyOwner {
+    function setGovernance(address _governance) external override onlyOwner {
         require(_governance != address(0), "Invalid governance address");
         governance = _governance;
     }

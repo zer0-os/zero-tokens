@@ -15,13 +15,18 @@ import {
     GovernorTimelockControl,
     TimelockController
     } from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
-import { GovernorVotesQuorumFraction } from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
-import { GovernorPreventLateQuorum } from "@openzeppelin/contracts/governance/extensions/GovernorPreventLateQuorum.sol";
+import {
+    GovernorVotesQuorumFraction
+    } from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
+import {
+    GovernorPreventLateQuorum
+    } from "@openzeppelin/contracts/governance/extensions/GovernorPreventLateQuorum.sol";
 
 /**
  * @title ZDAO
  * @notice A customizable governance contract based on OpenZeppelin's Governor contracts.
- * @dev Extends OpenZeppelin's Governor contracts with various extensions for governance settings, voting, timelock control, and quorum fraction.
+ * @dev Extends OpenZeppelin's Governor contracts with various extensions for governance settings, 
+ * voting, timelock control, and quorum fraction.
  * See OpenZeppelin documentation: https://docs.openzeppelin.com/contracts/4.x/api/governance
  * @custom:security-contact admin@zer0.tech
  */
@@ -88,7 +93,8 @@ contract ZDAO is
      * @param proposalId The ID of the proposal.
      * @return The ProposalState enum value.
      * @dev Overrides the function from Governor and GovernorTimelockControl.
-     * See OpenZeppelin GovernorTimelockControl: https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorTimelockControl
+     * See OpenZeppelin GovernorTimelockControl: 
+     * https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorTimelockControl
      */
     function state(uint256 proposalId)
         public view override(Governor, GovernorTimelockControl) returns (ProposalState)
@@ -104,7 +110,8 @@ contract ZDAO is
      * @param descriptionHash The hash of the proposal description.
      * @return The ID of the canceled proposal.
      * @dev Overrides the function from Governor and GovernorTimelockControl.
-     * See OpenZeppelin GovernorTimelockControl: https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorTimelockControl
+     * See OpenZeppelin GovernorTimelockControl: 
+     * https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorTimelockControl
      */
     function _cancel(
         address[] memory targets,
@@ -121,7 +128,8 @@ contract ZDAO is
      * @dev Returns the address of the executor.
      * @return The address of the executor.
      * @dev Overrides the function from Governor and GovernorTimelockControl.
-     * See OpenZeppelin GovernorTimelockControl: https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorTimelockControl
+     * See OpenZeppelin GovernorTimelockControl:
+     * https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorTimelockControl
      */
     function _executor()
         internal view override(Governor, GovernorTimelockControl) returns (address)
