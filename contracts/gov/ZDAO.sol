@@ -189,25 +189,25 @@ contract ZDAO is
         );
     }
 
-    /**
-    * @dev Overrides the proposal queuing process for governance execution.
-    * In some governance systems, queuing a proposal is required before execution. If queuing is unnecessary,
-    * this function may revert.
-    * 
-    * Queuing a proposal requires:
-    * - Quorum is reached,
-    * - The vote is successful,
-    * - The voting period has ended.
-    * 
-    * Emits a {ProposalQueued} event upon successful queuing.
-    * 
-    * @param targets Array of contract addresses that will receive calls during proposal execution.
-    * @param values Array of amounts (in wei) to be sent with each call to the respective contract in `targets`.
-    * @param calldatas Array of ABI-encoded function calls, including arguments, to execute on each target contract.
-    * @param descriptionHash Hash of the proposal's description, used to ensure unique proposal identification.
-    *
-    * @return proposalId Returns a unique identifier for the proposal after it is queued.
-    */
+    // /**
+    // * @dev Overrides the proposal queuing process for governance execution.
+    // * In some governance systems, queuing a proposal is required before execution. If queuing is unnecessary,
+    // * this function may revert.
+    // * 
+    // * Queuing a proposal requires:
+    // * - Quorum is reached,
+    // * - The vote is successful,
+    // * - The voting period has ended.
+    // * 
+    // * Emits a {ProposalQueued} event upon successful queuing.
+    // * 
+    // * @param targets Array of contract addresses that will receive calls during proposal execution.
+    // * @param values Array of amounts (in wei) to be sent with each call to the respective contract in `targets`.
+    // * @param calldatas Array of ABI-encoded function calls, including arguments, to execute on each target contract.
+    // * @param descriptionHash Hash of the proposal's description, used to ensure unique proposal identification.
+    // *
+    // * @return proposalId Returns a unique identifier for the proposal after it is queued.
+    // */
     function _queueOperations(
         uint256 /*proposalId*/,
         address[] memory /*targets*/,

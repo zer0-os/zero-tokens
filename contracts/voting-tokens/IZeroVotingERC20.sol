@@ -50,11 +50,4 @@ interface IZeroVotingERC20 {
      * @return The balance of the account excluding locked tokens.
      */
     function balanceOf(address account) external view returns (uint256);
-
-    /**
-     * @notice Returns the amount of tokens locked for voting by an account.
-     * @param account The address of the account.
-     * @return The amount of locked tokens.
-     */
-    function lockedTokens(address account) external view returns (uint256);
 }

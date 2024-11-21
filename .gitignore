@@ -9,6 +9,7 @@ typechain-types
 .vscode
 dist
 bin
+*.log
 
 # Hardhat files
 cache

@@ -135,15 +135,51 @@ contract ZeroVotingERC721 is ERC721, ERC721Burnable, AccessControl, Ownable {
     }
 
     /**
-     * @dev Override transfer functions to prevent locked tokens from being transferred.
-     */
+    * @notice Implements _beforeTokenTransfer to prevent the transfer of locked tokens.
+    * @dev This function is called before any token transfer and checks if the token is locked for voting.
+    *      If the token is locked, the transfer will be reverted.
+    * @param tokenId The ID of the token being transferred.
+    */
     function _beforeTokenTransfer(
+        uint256 tokenId
+    ) internal view {
+        require(!_lockedTokens[tokenId], "Token is locked for voting");
+    }
+
+    /**
+    * @notice Implements transferFrom to prevent the transfer of locked tokens.
+    * @dev This function allows transferring tokens but ensures the token is not locked for voting.
+    *      If the token is locked, the transfer will be reverted.
+    * @param from The address of the current owner of the token.
+    * @param to The address to which the token is being transferred.
+    * @param tokenId The ID of the token being transferred.
+    */
+    function transferFrom(
         address from,
         address to,
         uint256 tokenId
-    ) internal override {
-        require(!_lockedTokens[tokenId], "Token is locked for voting");
-        super._beforeTokenTransfer(from, to, tokenId);
+    ) public override {
+        _beforeTokenTransfer(tokenId);
+        super.transferFrom(from, to, tokenId);
+    }
+
+    /**
+    * @notice Implements safeTransferFrom to prevent the transfer of locked tokens.
+    * @dev This function allows safely transferring tokens with data, but ensures the token is not locked for voting.
+    *      If the token is locked, the transfer will be reverted.
+    * @param from The address of the current owner of the token.
+    * @param to The address to which the token is being transferred.
+    * @param tokenId The ID of the token being transferred.
+    * @param data Additional data sent along with the transfer.
+    */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public override {
+        _beforeTokenTransfer(tokenId);
+        super.safeTransferFrom(from, to, tokenId, data);
     }
 
     /**
